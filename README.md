@@ -22,6 +22,8 @@ This folder is ready to publish as a static GitHub Pages site.
 
 No build step is required.
 
+If the gig-grid artwork does not appear online, confirm that the full `assets/gig-grids` folder was uploaded. The app expects files such as `assets/gig-grids/freak/page-4.png` and `assets/gig-grids/rocker/page-4.png` to exist in the same published folder as `app.js`.
+
 ## Local Preview
 
 You can open `index.html` directly in a browser, or serve the folder locally:

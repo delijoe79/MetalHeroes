@@ -853,22 +853,69 @@ textarea {
   position: relative;
   width: 1200px;
   max-width: none;
+  aspect-ratio: 1584 / 1224;
   margin: 0 auto;
   border-radius: 24px;
   overflow: hidden;
+  background: #ffffff;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
 }
 
 .gig-page-image {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
   user-select: none;
+}
+
+.gig-page-missing {
+  display: none;
+  position: absolute;
+  inset: 0;
+  place-items: center;
+  gap: 12px;
+  padding: 32px;
+  text-align: center;
+  color: #150807;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(20, 8, 7, 0.04) 0,
+      rgba(20, 8, 7, 0.04) 10px,
+      rgba(255, 255, 255, 0.18) 10px,
+      rgba(255, 255, 255, 0.18) 20px
+    ),
+    #fff8ef;
+}
+
+.gig-page-missing strong {
+  display: block;
+  font-family: "Metal Mania", cursive;
+  font-size: 2.8rem;
+  letter-spacing: 0;
+}
+
+.gig-page-missing span {
+  display: block;
+  max-width: 720px;
+  overflow-wrap: anywhere;
+  color: rgba(21, 8, 7, 0.72);
+  font-weight: 700;
+}
+
+.gig-canvas.is-missing-art .gig-page-image {
+  opacity: 0;
+}
+
+.gig-canvas.is-missing-art .gig-page-missing {
+  display: grid;
 }
 
 .gig-page-overlay {
   position: absolute;
   inset: 0;
+  z-index: 1;
 }
 
 .gig-node-overlay {

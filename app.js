@@ -1,5 +1,6 @@
 (function () {
   const STORAGE_KEY = "metal-heroes-sheet-forge-v1";
+  const APP_BASE_URL = getAppBaseUrl();
 
   const LEVEL_OPTIONS = [
     { value: "pussy", label: "Pussy" },
@@ -593,8 +594,19 @@
     );
   }
 
+  function getAppBaseUrl() {
+    const scripts = Array.from(document.scripts || []);
+    const appScript = scripts.find(function (script) {
+      return /(^|\/)app\.js(?:[?#].*)?$/.test(script.src || "");
+    });
+    if (appScript && appScript.src) {
+      return appScript.src.replace(/app\.js(?:[?#].*)?$/, "");
+    }
+    return new URL("./", window.location.href).href;
+  }
+
   function getGigPageImagePath(difficulty, pageNumber) {
-    return "assets/gig-grids/" + difficulty + "/page-" + pageNumber + ".png";
+    return APP_BASE_URL + "assets/gig-grids/" + difficulty + "/page-" + pageNumber + ".png";
   }
 
   function toPagePercent(value, total) {
@@ -1106,11 +1118,17 @@
           "</span></span>"
         );
       }).join("") +
-      "</div></div><div class='gig-canvas-shell'><div class='gig-canvas'><img class='gig-page-image' src='" +
+      "</div></div><div class='gig-canvas-shell'><div class='gig-canvas'><img class='gig-page-image' width='" +
+      GIG_PAGE_WIDTH +
+      "' height='" +
+      GIG_PAGE_HEIGHT +
+      "' src='" +
       getGigPageImagePath(difficulty, currentPage.number) +
       "' alt='" +
       escapeHtml(title + " page " + currentPage.number) +
-      "'><div class='gig-page-overlay'>" +
+      "' data-art-src='" +
+      escapeHtml(getGigPageImagePath(difficulty, currentPage.number)) +
+      "'><div class='gig-page-missing' aria-hidden='true'><strong>Grid art missing</strong><span></span></div><div class='gig-page-overlay'>" +
       currentPage.gigs.map(function (gig) {
         return renderGigOverlay(difficulty, gig);
       }).join("") +
@@ -1410,6 +1428,33 @@
     }
     handleInputEvent(target);
   });
+
+  appRoot.addEventListener("error", function (event) {
+    const target = event.target;
+    if (!target.matches || !target.matches(".gig-page-image")) {
+      return;
+    }
+    const canvas = target.closest(".gig-canvas");
+    if (!canvas) {
+      return;
+    }
+    const missingText = canvas.querySelector(".gig-page-missing span");
+    if (missingText) {
+      missingText.textContent = target.dataset.artSrc || target.src;
+    }
+    canvas.classList.add("is-missing-art");
+  }, true);
+
+  appRoot.addEventListener("load", function (event) {
+    const target = event.target;
+    if (!target.matches || !target.matches(".gig-page-image")) {
+      return;
+    }
+    const canvas = target.closest(".gig-canvas");
+    if (canvas) {
+      canvas.classList.remove("is-missing-art");
+    }
+  }, true);
 
   appRoot.addEventListener("toggle", function (event) {
     const detailKey = event.target.dataset.detailKey;
